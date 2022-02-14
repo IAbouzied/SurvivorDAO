@@ -1,0 +1,25 @@
+{
+  "name": "survivordao",
+  "version": "1.0.0",
+  "description": "Submission for ETHDenver 2022",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IAbouzied/SurvivorDAO.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IAbouzied/SurvivorDAO/issues"
+  },
+  "homepage": "https://github.com/IAbouzied/SurvivorDAO#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0"
+  }
+}
