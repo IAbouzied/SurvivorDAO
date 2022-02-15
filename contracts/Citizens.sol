@@ -9,11 +9,19 @@ contract Citizens is ERC721Votes {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
+    struct Citizen {
+        string name;
+        uint roundsSurvived;
+        bool exiled;
+    }
+
+    Citizen[] public citizens;
+
     bool _gameStarted = false;
 
     constructor() ERC721("Citizens", "CTZN") EIP712("SurvivorDAO", "1.0.0")  {}
 
-    function mintNFT()
+    function mintNFT(string memory _name)
         public
         returns (uint256)
     {
@@ -21,6 +29,8 @@ contract Citizens is ERC721Votes {
         require(!gameStarted(), "Game has already started");
         _tokenIds.increment();
 
+        Citizen memory newCitizen = Citizen(_name, 0, false);
+        citizens.push(newCitizen);
         uint256 newItemId = _tokenIds.current();
         _mint(_msgSender(), newItemId);
 
@@ -39,5 +49,9 @@ contract Citizens is ERC721Votes {
 
     function gameStarted() public view returns (bool) {
         return _gameStarted;
+    }
+
+    function getCitizen(uint tokenId) public view returns (Citizen memory) {
+        return citizens[tokenId-1];
     }
 }
