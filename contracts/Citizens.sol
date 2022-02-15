@@ -15,6 +15,7 @@ contract Citizens is ERC721Votes {
         public
         returns (uint256)
     {
+        require(balanceOf(msg.sender) == 0);
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
