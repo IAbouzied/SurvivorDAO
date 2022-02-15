@@ -15,12 +15,18 @@ contract Citizens is ERC721Votes {
         public
         returns (uint256)
     {
-        require(balanceOf(msg.sender) == 0);
+        require(balanceOf(_msgSender()) == 0);
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
-        _mint(msg.sender, newItemId);
+        _mint(_msgSender(), newItemId);
 
         return newItemId;
+    }
+
+    function delegate(address delegatee) public virtual override {
+        require(delegatee != _msgSender());
+        address account = _msgSender();
+        _delegate(account, delegatee);
     }
 }
