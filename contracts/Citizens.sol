@@ -9,6 +9,8 @@ contract Citizens is ERC721Votes {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
+    bool _gameStarted = false;
+
     constructor() ERC721("Citizens", "CTZN") EIP712("SurvivorDAO", "1.0.0")  {}
 
     function mintNFT()
@@ -16,6 +18,7 @@ contract Citizens is ERC721Votes {
         returns (uint256)
     {
         require(balanceOf(_msgSender()) == 0);
+        require(!gameStarted());
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
@@ -28,5 +31,13 @@ contract Citizens is ERC721Votes {
         require(delegatee != _msgSender());
         address account = _msgSender();
         _delegate(account, delegatee);
+    }
+
+    function startGame() external {
+        _gameStarted = true;
+    }
+
+    function gameStarted() public view returns (bool) {
+        return _gameStarted;
     }
 }
