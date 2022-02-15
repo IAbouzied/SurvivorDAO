@@ -17,8 +17,8 @@ contract Citizens is ERC721Votes {
         public
         returns (uint256)
     {
-        require(balanceOf(_msgSender()) == 0);
-        require(!gameStarted());
+        require(balanceOf(_msgSender()) == 0, "User already owns a token");
+        require(!gameStarted(), "Game has already started");
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
@@ -28,7 +28,7 @@ contract Citizens is ERC721Votes {
     }
 
     function delegate(address delegatee) public virtual override {
-        require(delegatee != _msgSender());
+        require(delegatee != _msgSender(), "Cannot self-delegate");
         address account = _msgSender();
         _delegate(account, delegatee);
     }
