@@ -2,3 +2,5 @@ node_modules
 PAT
 .gitignore
 build
+contracts/artifacts
+.idea
