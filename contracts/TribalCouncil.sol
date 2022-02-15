@@ -6,13 +6,18 @@ import "../node_modules/@openzeppelin/contracts/governance/Governor.sol";
 import "../node_modules/@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
 import "../node_modules/@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 import "../node_modules/@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
+import "./Citizens.sol";
 
 contract TribalCouncil is Governor, GovernorVotes, GovernorVotesQuorumFraction, GovernorCountingSimple {
-    constructor(IVotes _token)
+    Citizens private _citizens;
+
+    constructor(Citizens _token)
     Governor("MyGovernor")
     GovernorVotes(_token)
     GovernorVotesQuorumFraction(4)
-    {}
+    {
+        _citizens = _token;
+    }
 
     function votingDelay() public pure override returns (uint256) {
         return 0;
@@ -60,6 +65,7 @@ contract TribalCouncil is Governor, GovernorVotes, GovernorVotesQuorumFraction, 
     override(Governor)
     returns (uint256)
     {
+        require(_citizens.gameStarted());
         return super.propose(targets, values, calldatas, description);
     }
 
