@@ -17,6 +17,8 @@ contract Citizens is ERC721Votes {
 
     Citizen[] public citizens;
 
+    event CitizenNaturalized(uint tokenId, string name);
+
     bool _gameStarted = false;
 
     constructor() ERC721("Citizens", "CTZN") EIP712("SurvivorDAO", "1.0.0")  {}
@@ -33,6 +35,8 @@ contract Citizens is ERC721Votes {
         citizens.push(newCitizen);
         uint256 newItemId = _tokenIds.current();
         _mint(_msgSender(), newItemId);
+
+        emit CitizenNaturalized(newItemId, _name);
 
         return newItemId;
     }
