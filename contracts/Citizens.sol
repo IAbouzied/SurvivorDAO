@@ -18,6 +18,7 @@ contract Citizens is ERC721Votes {
     Citizen[] public citizens;
 
     event CitizenNaturalized(uint tokenId, string name);
+    event CitizenExiled(uint tokenId, string name, uint roundsSurvived);
 
     bool _gameStarted = false;
 
@@ -39,6 +40,25 @@ contract Citizens is ERC721Votes {
         emit CitizenNaturalized(newItemId, _name);
 
         return newItemId;
+    }
+
+    function exile(uint tokenId) public returns (Citizen memory) {
+        require(tokenId > 0 && tokenId <= _tokenIds.current(), "tokenId does not exist");
+
+        citizens[tokenId-1].exiled = true;
+        _incrementRoundsSurvived();
+
+        emit CitizenExiled(tokenId, citizens[tokenId-1].name, citizens[tokenId-1].roundsSurvived);
+
+        return citizens[tokenId-1];
+    }
+
+    function _incrementRoundsSurvived() private {
+        for (uint i = 0; i < citizens.length; i++) {
+            if (!citizens[i].exiled) {
+                citizens[i].roundsSurvived++;
+            }
+        }
     }
 
     function delegate(address delegatee) public virtual override {
@@ -89,7 +109,7 @@ contract Citizens is ERC721Votes {
         }
     }
 
-    function _getTokenIdFromOwner(address account) private returns (uint256) {
+    function _getTokenIdFromOwner(address account) private view returns (uint256) {
         require(balanceOf(account) > 1, "address does not own a token");
         for (uint i = 0; i < citizens.length; i++) {
             uint tokenId = i + 1;
