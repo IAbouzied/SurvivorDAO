@@ -51,6 +51,8 @@ contract Citizens is ERC721Votes {
 
         emit CitizenExiled(tokenId, citizens[tokenId-1].name, citizens[tokenId-1].roundsSurvived);
 
+        _resetDelegationsToAddress(ownerOf(tokenId));
+
         return citizens[tokenId-1];
     }
 
@@ -68,6 +70,15 @@ contract Citizens is ERC721Votes {
         require(!citizens[tokenId-1].exiled, "Cannot delegate to exiled player");
         address account = _msgSender();
         _delegate(account, delegatee);
+    }
+
+    function _resetDelegationsToAddress(address account) private {
+        for (uint i = 0; i < citizens.length; i++) {
+            address citizenOwnerAddress = ownerOf(i+1);
+            if (delegates(citizenOwnerAddress) == account) {
+                _delegate(citizenOwnerAddress, address(0));
+            }
+        }
     }
 
     function startGame() external {
