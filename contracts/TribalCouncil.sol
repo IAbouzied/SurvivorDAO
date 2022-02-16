@@ -10,6 +10,7 @@ import "./Citizens.sol";
 
 contract TribalCouncil is Governor, GovernorVotes, GovernorVotesQuorumFraction, GovernorCountingSimple {
     Citizens private _citizens;
+    uint256[] private _proposalIds;
 
     constructor(Citizens _token)
     Governor("MyGovernor")
@@ -66,7 +67,10 @@ contract TribalCouncil is Governor, GovernorVotes, GovernorVotesQuorumFraction, 
     returns (uint256)
     {
         require(_citizens.gameStarted());
-        return super.propose(targets, values, calldatas, description);
+        require(!_activeProposalExists());
+        uint256 proposalId = super.propose(targets, values, calldatas, description);
+        _proposalIds.push(proposalId);
+        return proposalId;
     }
 
     function _execute(uint256 proposalId, address[] memory targets, uint256[] memory values, bytes[] memory calldatas, bytes32 descriptionHash)
@@ -100,5 +104,19 @@ contract TribalCouncil is Governor, GovernorVotes, GovernorVotesQuorumFraction, 
     returns (bool)
     {
         return super.supportsInterface(interfaceId);
+    }
+
+    function _activeProposalExists()
+    private
+    view
+    returns (bool)
+    {
+        for (uint i = 0; i < _proposalIds.length; i++) {
+            ProposalState state = state(_proposalIds[i]);
+            if (state == ProposalState.Active) {
+                return true;
+            }
+        }
+        return false;
     }
 }
