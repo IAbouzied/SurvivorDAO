@@ -58,7 +58,40 @@ contract TribalCouncil is Governor, GovernorVotes, GovernorVotesQuorumFraction, 
     override(Governor)
     returns (ProposalState)
     {
-        return super.state(proposalId);
+        ProposalCore storage proposal = _proposals[proposalId];
+
+        if (proposal.executed) {
+            return ProposalState.Executed;
+        }
+
+        if (proposal.canceled) {
+            return ProposalState.Canceled;
+        }
+
+        uint256 snapshot = proposalSnapshot(proposalId);
+
+        if (snapshot == 0) {
+            revert("Governor: unknown proposal id");
+        }
+
+        if (snapshot >= block.number) {
+            return ProposalState.Pending;
+        }
+
+        uint256 deadline = proposalDeadline(proposalId);
+
+        (uint256 support, uint256 against, uint256 abstain) = proposalVotes(proposalId);
+        uint256 totalVotes = support + against + abstain;
+
+        if (deadline >= block.number && _citizens.maxActiveVoters() > totalVotes) {
+            return ProposalState.Active;
+        }
+
+        if (_quorumReached(proposalId) && _voteSucceeded(proposalId)) {
+            return ProposalState.Succeeded;
+        } else {
+            return ProposalState.Defeated;
+        }
     }
 
     function propose(address[] memory targets, uint256[] memory values, bytes[] memory calldatas, string memory description)

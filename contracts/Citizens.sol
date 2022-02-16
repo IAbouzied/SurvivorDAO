@@ -58,4 +58,18 @@ contract Citizens is ERC721Votes {
     function getCitizen(uint tokenId) public view returns (Citizen memory) {
         return citizens[tokenId-1];
     }
+
+    function maxActiveVoters() public view returns (uint) {
+        return _activeCitizens();
+    }
+
+    function _activeCitizens() private view returns (uint) {
+        uint total = 0;
+        for (uint i = 0; i < citizens.length; i++) {
+            if (!citizens[i].exiled) {
+                total++;
+            }
+        }
+        return total;
+    }
 }
