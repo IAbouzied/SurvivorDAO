@@ -111,7 +111,7 @@ contract Citizens is ERC721Votes {
     }
 
     function _getTokenIdFromOwner(address account) private view returns (uint256) {
-        require(balanceOf(account) > 1, "address does not own a token");
+        require(balanceOf(account) > 0, "address does not own a token");
         for (uint i = 0; i < citizens.length; i++) {
             uint tokenId = i + 1;
             if (_msgSender() == ownerOf(tokenId)) {
