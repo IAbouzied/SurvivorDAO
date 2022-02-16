@@ -81,8 +81,8 @@ contract TribalCouncil is Governor, GovernorVotes, GovernorVotesQuorumFraction, 
     override(Governor)
     returns (uint256)
     {
-        require(_citizens.gameStarted());
-        require(!_activeProposalExists());
+        require(_citizens.gameStarted(), "Proposals not allowed until the game has begun");
+        require(!_activeProposalExists(), "There is already an active proposal");
         uint256 proposalId = super.propose(targets, values, calldatas, description);
         _proposalIds.push(proposalId);
         return proposalId;
