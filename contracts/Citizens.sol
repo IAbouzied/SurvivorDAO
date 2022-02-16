@@ -64,6 +64,8 @@ contract Citizens is ERC721Votes {
 
     function delegate(address delegatee) public virtual override {
         require(delegatee != _msgSender(), "Cannot self-delegate");
+        uint tokenId = _getTokenIdFromOwner(delegatee);
+        require(!citizens[tokenId-1].exiled, "Cannot delegate to exiled player");
         address account = _msgSender();
         _delegate(account, delegatee);
     }
