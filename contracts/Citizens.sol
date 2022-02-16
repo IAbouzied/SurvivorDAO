@@ -43,6 +43,7 @@ contract Citizens is ERC721Votes {
     }
 
     function exile(uint tokenId) public returns (Citizen memory) {
+        require(gameStarted(), "Cannot exile before the game has started");
         require(tokenId > 0 && tokenId <= _tokenIds.current(), "tokenId does not exist");
 
         citizens[tokenId-1].exiled = true;
