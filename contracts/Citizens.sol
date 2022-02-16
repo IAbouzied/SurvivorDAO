@@ -72,4 +72,31 @@ contract Citizens is ERC721Votes {
         }
         return total;
     }
+
+    function _getVotingUnits(address account) internal virtual override returns (uint256) {
+        uint accountBalance = balanceOf(account);
+        require(accountBalance < 2, "Account seems to have more than one Citizen, invalid state");
+
+        if (accountBalance == 0) {
+            return accountBalance;
+        }
+
+        uint tokenId = _getTokenIdFromOwner(account);
+        if (!citizens[tokenId-1].exiled) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    function _getTokenIdFromOwner(address account) private returns (uint256) {
+        require(balanceOf(account) > 1, "address does not own a token");
+        for (uint i = 0; i < citizens.length; i++) {
+            uint tokenId = i + 1;
+            if (_msgSender() == ownerOf(tokenId)) {
+                return tokenId;
+            }
+        }
+        revert("Address has a balance greater than 0 but does not map to a token");
+    }
 }
