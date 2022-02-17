@@ -46,12 +46,13 @@ contract Citizens is ERC721Votes {
         require(gameStarted(), "Cannot exile before the game has started");
         require(tokenId > 0 && tokenId <= _tokenIds.current(), "tokenId does not exist");
 
+        _resetDelegationsToAddress(ownerOf(tokenId));
+        _delegate(ownerOf(tokenId), address(0));
+
         citizens[tokenId-1].exiled = true;
         _incrementRoundsSurvived();
 
         emit CitizenExiled(tokenId, citizens[tokenId-1].name, citizens[tokenId-1].roundsSurvived);
-
-        _resetDelegationsToAddress(ownerOf(tokenId));
 
         return citizens[tokenId-1];
     }
@@ -127,7 +128,7 @@ contract Citizens is ERC721Votes {
         require(balanceOf(account) > 0, "address does not own a token");
         for (uint i = 0; i < citizens.length; i++) {
             uint tokenId = i + 1;
-            if (_msgSender() == ownerOf(tokenId)) {
+            if (account == ownerOf(tokenId)) {
                 return tokenId;
             }
         }
