@@ -133,4 +133,12 @@ contract Citizens is ERC721Votes {
         }
         revert("Address has a balance greater than 0 but does not map to a token");
     }
+
+    function resetGame() public {
+        for (uint i = 0; i < citizens.length; i++) {
+            citizens[i].exiled = false;
+            citizens[i].roundsSurvived = 0;
+        }
+        _gameStarted = false;
+    }
 }
