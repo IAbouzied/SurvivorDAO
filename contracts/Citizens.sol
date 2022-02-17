@@ -67,7 +67,7 @@ contract Citizens is ERC721Votes {
 
     function delegate(address delegatee) public virtual override {
         require(delegatee != _msgSender(), "Cannot self-delegate");
-        uint tokenId = _getTokenIdFromOwner(delegatee);
+        uint tokenId = getTokenIdFromOwner(delegatee);
         require(!citizens[tokenId-1].exiled, "Cannot delegate to exiled player");
         address account = _msgSender();
         _delegate(account, delegatee);
@@ -116,7 +116,7 @@ contract Citizens is ERC721Votes {
             return accountBalance;
         }
 
-        uint tokenId = _getTokenIdFromOwner(account);
+        uint tokenId = getTokenIdFromOwner(account);
         if (!citizens[tokenId-1].exiled) {
             return 1;
         } else {
@@ -124,7 +124,7 @@ contract Citizens is ERC721Votes {
         }
     }
 
-    function _getTokenIdFromOwner(address account) private view returns (uint256) {
+    function getTokenIdFromOwner(address account) public view returns (uint256) {
         require(balanceOf(account) > 0, "address does not own a token");
         for (uint i = 0; i < citizens.length; i++) {
             uint tokenId = i + 1;
@@ -141,5 +141,13 @@ contract Citizens is ERC721Votes {
             citizens[i].roundsSurvived = 0;
         }
         _gameStarted = false;
+    }
+
+    function getCitizens() public view returns (Citizen[] memory) {
+        return citizens;
+    }
+
+    function totalCitizens() public view returns (uint) {
+        return citizens.length;
     }
 }
