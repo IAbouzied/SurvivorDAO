@@ -22,7 +22,9 @@ describe('Citizens', () => {
     });
 
     it('Successfully mint a citizen', async () => {
-      const transaction = await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await expect(citizensSigned1.mintNFT(CITIZEN_NAME_1))
+        .to.emit(citizens, 'CitizenNaturalized')
+        .withArgs(1, CITIZEN_NAME_1);
 
       const citizen = await citizens.getCitizen(1);
       expect(citizen.name).to.equal(CITIZEN_NAME_1);
@@ -65,6 +67,15 @@ describe('Citizens', () => {
       await citizensSigned1.mintNFT(CITIZEN_NAME_1);
 
       await expect(citizens.exile(1)).to.be.reverted;
+    });
+
+    it('Can exile after game begins', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizens.startGame();
+
+      await expect(citizens.exile(1))
+        .to.emit(citizens, 'CitizenExiled')
+        .withArgs(1, CITIZEN_NAME_1, 0);
     });
 
     it('Exile increments players roundsSurvived', async () => {
