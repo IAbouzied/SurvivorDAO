@@ -1,9 +1,9 @@
 import {expect, use} from 'chai';
 import {Contract, constants} from 'ethers';
 import {deployContract, MockProvider, solidity} from 'ethereum-waffle';
-import { createRequire } from "module";
+import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const Citizens = require("../../build/waffle-contracts/Citizens.json");
+const Citizens = require('../../build/waffle-contracts/Citizens.json');
 
 use(solidity);
 
@@ -11,8 +11,8 @@ describe('Citizens', () => {
   const [orchestrator, wallet1, wallet2] = new MockProvider().getWallets();
   let citizens, citizensSigned1, citizensSigned2;
 
-  const CITIZEN_NAME_1 = "Socrates";
-  const CITIZEN_NAME_2 = "Plato";
+  const CITIZEN_NAME_1 = 'Socrates';
+  const CITIZEN_NAME_2 = 'Plato';
 
   describe('Minting', () => {
     beforeEach(async () => {
