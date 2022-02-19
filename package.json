@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "Submission for ETHDenver 2022",
   "main": "truffle-config.js",
-  "type": "module",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "export NODE_ENV=test && mocha \"test/waffle/*.js\"",
+    "test": "export NODE_ENV=test && mocha \"test/waffle/*.mjs\"",
     "build": "waffle"
   },
   "repository": {
