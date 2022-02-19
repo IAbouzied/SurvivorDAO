@@ -1,5 +1,5 @@
 import {expect, use} from 'chai';
-import {Contract} from 'ethers';
+import {Contract, constants} from 'ethers';
 import {deployContract, MockProvider, solidity} from 'ethereum-waffle';
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
@@ -85,6 +85,55 @@ describe('Citizens', () => {
       expect(citizen1.roundsSurvived).to.equal(0);
       expect(citizen1.exiled).to.equal(true);
       expect(citizen2.roundsSurvived).to.equal(1);
+    });
+  });
+
+  describe('Delegation', () => {
+    beforeEach(async () => {
+      citizens = await deployContract(orchestrator, Citizens, []);
+      citizensSigned1 = citizens.connect(wallet1);
+      citizensSigned2 = citizens.connect(wallet2);
+    });
+
+    it('Cannot delegate to yourself', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+
+      await expect(citizensSigned1.delegate(wallet1.address)).to.be.reverted;
+    });
+
+    it('Cannot delegate to exiled players', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+      await citizens.startGame();
+      await citizens.exile(2);
+
+      await expect(citizensSigned1.delegate(wallet2.address)).to.be.reverted;
+    });
+
+    it('Reset delegations made to an exiled player', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+      await citizensSigned2.delegate(wallet1.address);
+
+      expect(await citizens.delegates(wallet2.address)).to.equal(wallet1.address);
+
+      await citizens.startGame();
+      await citizens.exile(1);
+
+      expect(await citizens.delegates(wallet2.address)).to.equal(constants.AddressZero);
+    });
+
+    it('Reset delegations made by an exiled player', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+      await citizensSigned1.delegate(wallet2.address);
+
+      expect(await citizens.delegates(wallet1.address)).to.equal(wallet2.address);
+
+      await citizens.startGame();
+      await citizens.exile(1);
+
+      expect(await citizens.delegates(wallet1.address)).to.equal(constants.AddressZero);
     });
   });
 });
