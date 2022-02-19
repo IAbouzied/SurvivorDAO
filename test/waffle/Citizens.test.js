@@ -53,4 +53,38 @@ describe('Citizens', () => {
       await expect(citizensSigned1.mintNFT(CITIZEN_NAME_1)).to.be.reverted;
     });
   });
+
+  describe('Exile', () => {
+    beforeEach(async () => {
+      citizens = await deployContract(orchestrator, Citizens, []);
+      citizensSigned1 = citizens.connect(wallet1);
+      citizensSigned2 = citizens.connect(wallet2);
+    });
+
+    it('Cannot exile before game begins', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+
+      await expect(citizens.exile(1)).to.be.reverted;
+    });
+
+    it('Exile increments players roundsSurvived', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+      await citizens.startGame();
+
+      let citizen1 = await citizens.getCitizen(1);
+      let citizen2 = await citizens.getCitizen(2);
+      expect(citizen1.roundsSurvived).to.equal(0);
+      expect(citizen1.exiled).to.equal(false);
+      expect(citizen2.roundsSurvived).to.equal(0);
+
+      await citizens.exile(1);
+
+      citizen1 = await citizens.getCitizen(1);
+      citizen2 = await citizens.getCitizen(2);
+      expect(citizen1.roundsSurvived).to.equal(0);
+      expect(citizen1.exiled).to.equal(true);
+      expect(citizen2.roundsSurvived).to.equal(1);
+    });
+  });
 });
