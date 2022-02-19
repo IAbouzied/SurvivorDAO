@@ -161,6 +161,19 @@ describe('Citizens', () => {
 
       expect(await citizens.getVotes(wallet1.address)).to.equal(0);
     });
+
+    it('Max voting power is equal to the number of active players', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      expect(await citizens.maxActiveVoters()).to.equal(1);
+
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+      expect(await citizens.maxActiveVoters()).to.equal(2);
+
+      await citizens.startGame();
+      await citizens.exile(2);
+
+      expect(await citizens.maxActiveVoters()).to.equal(1);
+    });
   });
 
   describe('Reset', () => {
