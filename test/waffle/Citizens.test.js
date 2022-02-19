@@ -162,4 +162,41 @@ describe('Citizens', () => {
       expect(await citizens.getVotes(wallet1.address)).to.equal(0);
     });
   });
+
+  describe('Reset', () => {
+    beforeEach(async () => {
+      citizens = await deployContract(orchestrator, Citizens, []);
+      citizensSigned1 = citizens.connect(wallet1);
+      citizensSigned2 = citizens.connect(wallet2);
+    });
+
+    it('Resetting un-exiles players and resets their survived count', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+      await citizens.startGame();
+      await citizens.exile(1);
+
+      let citizen1 = await citizens.getCitizen(1);
+      let citizen2 = await citizens.getCitizen(2);
+      expect(citizen1.exiled).to.equal(true);
+      expect(citizen2.roundsSurvived).to.equal(1);
+
+      await citizens.resetGame();
+
+      citizen1 = await citizens.getCitizen(1);
+      citizen2 = await citizens.getCitizen(2);
+      expect(citizen1.exiled).to.equal(false);
+      expect(citizen2.roundsSurvived).to.equal(0);
+    });
+
+    it('Resetting allows new players to join', async () => {
+      await citizens.startGame();
+      await expect(citizensSigned1.mintNFT(CITIZEN_NAME_1)).to.be.reverted;
+
+      await citizens.resetGame();
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+
+      expect(await citizens.balanceOf(wallet1.address)).to.equal(1);
+    });
+  });
 });
