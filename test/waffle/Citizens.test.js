@@ -136,4 +136,30 @@ describe('Citizens', () => {
       expect(await citizens.delegates(wallet1.address)).to.equal(constants.AddressZero);
     });
   });
+
+  describe('Voting power', () => {
+    beforeEach(async () => {
+      citizens = await deployContract(orchestrator, Citizens, []);
+      citizensSigned1 = citizens.connect(wallet1);
+      citizensSigned2 = citizens.connect(wallet2);
+    });
+
+    it('Active citizens give one voting power', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+      await citizensSigned2.delegate(wallet1.address);
+
+      expect(await citizens.getVotes(wallet1.address)).to.equal(1);
+    });
+
+    it('Exiled citizens give no voting power', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+      await citizens.startGame();
+      await citizens.exile(2);
+      await citizensSigned2.delegate(wallet1.address);
+
+      expect(await citizens.getVotes(wallet1.address)).to.equal(0);
+    });
+  });
 });
