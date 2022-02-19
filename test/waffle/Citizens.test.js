@@ -212,4 +212,20 @@ describe('Citizens', () => {
       expect(await citizens.balanceOf(wallet1.address)).to.equal(1);
     });
   });
+
+  describe('Utilities', () => {
+    beforeEach(async () => {
+      citizens = await deployContract(orchestrator, Citizens, []);
+      citizensSigned1 = citizens.connect(wallet1);
+      citizensSigned2 = citizens.connect(wallet2);
+    });
+
+    it('Can get tokenId from address', async () => {
+      await citizensSigned1.mintNFT(CITIZEN_NAME_1);
+      await citizensSigned2.mintNFT(CITIZEN_NAME_2);
+
+      expect(await citizens.getTokenIdFromOwner(wallet1.address)).to.equal(1);
+      expect(await citizens.getTokenIdFromOwner(wallet2.address)).to.equal(2);
+    });
+  });
 });
