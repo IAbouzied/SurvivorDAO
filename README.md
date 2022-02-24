@@ -5,6 +5,9 @@ Members of Survivor DAO do not experience harmony. Rather, they compete with eac
 
 The front-end can be found here: [survivorDAO-ui](https://github.com/rolias4031/survivorDAO-ui)
 
+# Demo
+Watch a [two-minute demo](https://www.youtube.com/watch?v=r_930JlwbKE) of SurvivorDAO!
+
 # Technology
 Survivor DAO implements the [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-contracts) ERC-721 and Governor standards.
 
